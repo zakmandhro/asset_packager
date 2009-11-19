@@ -93,14 +93,22 @@ module Synthesis
     # instance methods
     attr_accessor :asset_type, :target, :target_dir, :sources
   
+    # if asset source starts with "/", look for it in ./public/{source_name}
+    # this allows for themes/skins subfolders under public that contain
+    # css and images. e.g. ./public/skins/horizon -> ./skin.css, ./images/header.png
     def initialize(asset_type, package_hash)
       target_parts = self.class.parse_path(package_hash.keys.first)
       @target_dir = target_parts[1].to_s
       @target = target_parts[2].to_s
       @sources = package_hash[package_hash.keys.first]
       @asset_type = asset_type
-      @asset_path = ($asset_base_path ? "#{$asset_base_path}/" : "#{RAILS_ROOT}/public/") +
-          "#{@asset_type}#{@target_dir.gsub(/^(.+)$/, '/\1')}"
+      if @target_dir=~/^\//
+        @asset_path = "#{RAILS_ROOT}/public#{@target_dir}"
+      else
+        @asset_path = ($asset_base_path ? "#{$asset_base_path}/" : "#{RAILS_ROOT}/public/") +
+            "#{@asset_type}#{@target_dir.gsub(/^(.+)$/, '/\1')}"
+      end
+      puts "asset path: #{@asset_path}"
       @extension = get_extension
       @file_name = "#{@target}_packaged.#{@extension}"
       @full_path = File.join(@asset_path, @file_name)
@@ -137,13 +145,10 @@ module Synthesis
         end
       end
 
-      # if asset source starts with "/", look for it in ./public/{source_name}
-      # this allows for themes/skins subfolders under public that contain
-      # css and images. e.g. ./public/skins/horizon -> ./skin.css, ./images/header.png
       def merged_file
         merged_file = ""
         @sources.each {|s| 
-          filename = s=~/^\// ? File.join(Rails.root, "public", "#{s}.#{@extension}") : "#{@asset_path}/#{s}.#{@extension}" 
+          filename = "#{@asset_path}/#{s}.#{@extension}" 
           File.open(filename, "r") { |f| 
             merged_file += f.read + "\n" 
           }
