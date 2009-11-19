@@ -137,10 +137,14 @@ module Synthesis
         end
       end
 
+      # if asset source starts with "/", look for it in ./public/{source_name}
+      # this allows for themes/skins subfolders under public that contain
+      # css and images. e.g. ./public/skins/horizon -> ./skin.css, ./images/header.png
       def merged_file
         merged_file = ""
         @sources.each {|s| 
-          File.open("#{@asset_path}/#{s}.#{@extension}", "r") { |f| 
+          filename = s=~/^\// ? File.join(Rails.root, "public", "#{s}.#{@extension}") : "#{@asset_path}/#{s}.#{@extension}" 
+          File.open(filename, "r") { |f| 
             merged_file += f.read + "\n" 
           }
         }
