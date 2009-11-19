@@ -2,6 +2,19 @@
 
 JavaScript and CSS Asset Compression for Production Rails Apps
 
+== About this fork (zakmandhro)
+
+This fork supports images and CSS to be grouped under skin/theme folders.
+
+You can create a structure like:
+ /public
+ -/skins
+ --/horizon
+ ---skin.css
+ ---products.css
+ ---/images
+ ----header.png
+
 == Description
 
 When it comes time to deploy your new web application, instead of 
@@ -43,6 +56,8 @@ http://www.crockford.com/javascript/jsmin.html
 * Rake Task for auto-generating the YAML file from your existing JavaScript files.
 
 == Updates
+November '09: zakmandhro
+* Added support for container subfolders under ./public to organize CSS and images as skins
 
 November '08:
 * Rails 2.2 compatibility fixes
@@ -102,6 +117,9 @@ stylesheets:
 - secondary:
   - foo
   - bar
+- skin_horizon:
+ - /skins/horizon/skin.css
+ - /skins/horizon/products.css
 
 3. Run the rake task "asset:packager:build_all" to generate the compressed, merged versions
 for each package. Whenever you rearrange the yaml file, you'll need to run this task again. 
