@@ -108,7 +108,6 @@ module Synthesis
         @asset_path = ($asset_base_path ? "#{$asset_base_path}/" : "#{RAILS_ROOT}/public/") +
             "#{@asset_type}#{@target_dir.gsub(/^(.+)$/, '/\1')}"
       end
-      puts "asset path: #{@asset_path}"
       @extension = get_extension
       @file_name = "#{@target}_packaged.#{@extension}"
       @full_path = File.join(@asset_path, @file_name)
